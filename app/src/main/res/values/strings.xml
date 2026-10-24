@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AutoMirror</string>
-    <string name="accessibility_description">Permite que los toques hechos en la pantalla del auto (Android Auto) se repliquen en el celular mientras está activo el espejado de AutoMirror.</string>
+    <string name="app_name">automirror</string>
+    <string name="accessibility_description">Permite que los toques hechos en la pantalla del auto (Android Auto) se repliquen en el celular mientras está activo el espejado de automirror.</string>
 </resources>

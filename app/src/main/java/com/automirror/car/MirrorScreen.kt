@@ -56,9 +56,9 @@ class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback
             val message = if (TouchService.isEnabled(carContext)) {
                 "Tocá «Iniciar» y aceptá la captura de pantalla en el celular"
             } else {
-                "En el celular, activá el servicio de accesibilidad de AutoMirror"
+                "En el celular, activá el servicio de accesibilidad de automirror"
             }
-            builder.setNavigationInfo(MessageInfo.Builder("AutoMirror").setText(message).build())
+            builder.setNavigationInfo(MessageInfo.Builder(carContext.getString(R.string.app_name)).setText(message).build())
         }
         return builder.build()
     }

@@ -3,7 +3,23 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M20,18c1.1,0 1.99,-0.9 1.99,-2L22,6c0,-1.11 -0.9,-2 -2,-2H4c-1.11,0 -2,0.89 -2,2v10c0,1.1 0.89,2 2,2H0v2h24v-2h-4zM4,16V6h16v10.01L4,16zM10,8h4v2h2l-4,4 -4,-4h2z" />
+    <!-- Mismo dibujo que el ícono de la app, reducido para la notificación. -->
+    <group
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:translateX="-10"
+        android:translateY="-8.8">
+        <path
+            android:pathData="M31,38H39A3,3 0,0 1,42 41V63A3,3 0,0 1,39 66H31A3,3 0,0 1,28 63V41A3,3 0,0 1,31 38Z
+                M61,42H79A3,3 0,0 1,82 45V57A3,3 0,0 1,79 60H61A3,3 0,0 1,58 57V45A3,3 0,0 1,61 42Z"
+            android:strokeWidth="4.5"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M46,52h8M50.5,48l4,4 -4,4M66,66h8"
+            android:strokeWidth="4.5"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+    </group>
 </vector>

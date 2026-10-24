@@ -30,7 +30,7 @@ class MainActivity : Activity() {
             setPadding(pad, pad * 2, pad, pad)
         }
 
-        column.addView(text("AutoMirror", 26f))
+        column.addView(text(getString(R.string.app_name), 26f))
         column.addView(text("Espeja la pantalla del celular en Android Auto y permite usarla tocando la pantalla del auto.", 15f))
 
         column.addView(text("1. Servicio de accesibilidad", 19f, top = 28))
@@ -50,12 +50,12 @@ class MainActivity : Activity() {
 
         column.addView(text("2. Android Auto", 19f, top = 28))
         column.addView(text(
-            "En la app de Android Auto: tocá varias veces \"Versión\" para activar el modo desarrollador, después ⋮ → Configuración para desarrolladores → activá \"Fuentes desconocidas\". AutoMirror va a aparecer en el menú de apps del auto.",
+            "En la app de Android Auto: tocá varias veces \"Versión\" para activar el modo desarrollador, después ⋮ → Configuración para desarrolladores → activá \"Fuentes desconocidas\". automirror va a aparecer en el menú de apps del auto.",
             15f
         ))
 
         column.addView(text("3. Probar", 19f, top = 28))
-        column.addView(text("Al abrir AutoMirror en el auto se pide acá el permiso de captura. También podés iniciarlo a mano:", 15f))
+        column.addView(text("Al abrir automirror en el auto se pide acá el permiso de captura. También podés iniciarlo a mano:", 15f))
         mirrorButton = button("") {
             if (Mirror.isMirroring) MirrorService.stop(this) else ProjectionActivity.launch(this)
         }
