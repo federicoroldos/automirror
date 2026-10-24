@@ -1,0 +1,16 @@
+# Gradle / build
+.gradle/
+.kotlin/
+build/
+
+# Rutas locales de cada PC (sdk.dir)
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Binarios: la app se compila e instala desde el código
+*.apk
+*.aab
+*.apkm

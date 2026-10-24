@@ -1,0 +1,138 @@
+package com.automirror
+
+import android.content.Context
+import android.graphics.PointF
+import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
+import android.media.projection.MediaProjection
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.Display
+import android.view.Surface
+
+/**
+ * Estado compartido entre el lado del celular (captura) y el lado del auto (superficie).
+ *
+ * El celular aporta un [MediaProjection]; el auto aporta un [Surface]. Cuando están los dos,
+ * se crea un VirtualDisplay que espeja la pantalla del celular directo sobre la superficie
+ * del auto. El sistema escala la imagen manteniendo la proporción y la centra, así que
+ * [carToPhone] solo tiene que deshacer esa transformación.
+ *
+ * Todo se usa desde el hilo principal.
+ */
+object Mirror {
+    private const val TAG = "AutoMirror"
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val listeners = mutableSetOf<() -> Unit>()
+
+    private lateinit var appContext: Context
+    private var projection: MediaProjection? = null
+    private var virtualDisplay: VirtualDisplay? = null
+
+    private var carSurface: Surface? = null
+    private var carWidth = 0
+    private var carHeight = 0
+    private var carDpi = 0
+
+    val isMirroring: Boolean get() = projection != null
+
+    fun init(context: Context) {
+        appContext = context.applicationContext
+    }
+
+    fun addListener(listener: () -> Unit) { listeners += listener }
+
+    fun removeListener(listener: () -> Unit) { listeners -= listener }
+
+    private fun notifyChanged() = listeners.toList().forEach { it() }
+
+    fun startProjection(newProjection: MediaProjection) {
+        stopProjection()
+        projection = newProjection
+        newProjection.registerCallback(object : MediaProjection.Callback() {
+            override fun onStop() {
+                Log.i(TAG, "MediaProjection detenida por el sistema")
+                if (projection === newProjection) releaseProjection()
+            }
+        }, mainHandler)
+        bind()
+        notifyChanged()
+    }
+
+    fun stopProjection() {
+        val current = projection ?: return
+        releaseProjection()
+        current.stop()
+    }
+
+    private fun releaseProjection() {
+        virtualDisplay?.release()
+        virtualDisplay = null
+        projection = null
+        DisplaySize.reset(appContext)
+        notifyChanged()
+    }
+
+    fun setCarSurface(surface: Surface?, width: Int, height: Int, dpi: Int) {
+        carSurface = surface
+        carWidth = width
+        carHeight = height
+        carDpi = dpi
+        bind()
+    }
+
+    private fun bind() {
+        val p = projection ?: return
+        val surface = carSurface
+        val vd = virtualDisplay
+        // Si el auto cambia de tamaño, el celular se adapta. Si la superficie desaparece
+        // (el usuario abrió otra app en el auto) se deja como está hasta que termine el espejado.
+        if (surface != null) DisplaySize.matchAspect(appContext, carWidth, carHeight)
+        if (vd == null) {
+            // Desde Android 14 cada MediaProjection permite crear un único VirtualDisplay,
+            // así que se crea recién cuando hay superficie y después solo se le cambia el destino.
+            if (surface == null) return
+            virtualDisplay = p.createVirtualDisplay(
+                "AutoMirror", carWidth, carHeight, carDpi,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, mainHandler
+            )
+            Log.i(TAG, "VirtualDisplay creado ${carWidth}x$carHeight @$carDpi")
+        } else if (surface == null) {
+            vd.surface = null
+        } else {
+            vd.resize(carWidth, carHeight, carDpi)
+            vd.surface = surface
+        }
+    }
+
+    /** Convierte un punto de la superficie del auto a coordenadas de la pantalla del celular. */
+    fun carToPhone(x: Float, y: Float): PointF? {
+        if (carWidth == 0 || carHeight == 0) return null
+        val phone = phoneSize()
+        val scale = minOf(carWidth.toFloat() / phone.x, carHeight.toFloat() / phone.y)
+        val offsetX = (carWidth - phone.x * scale) / 2f
+        val offsetY = (carHeight - phone.y * scale) / 2f
+        val px = (x - offsetX) / scale
+        val py = (y - offsetY) / scale
+        if (px < 0 || py < 0 || px >= phone.x || py >= phone.y) return null
+        return PointF(px, py)
+    }
+
+    /** Cuántos píxeles del celular equivale un píxel de la superficie del auto. */
+    fun carToPhoneScale(): Float {
+        if (carWidth == 0 || carHeight == 0) return 1f
+        val phone = phoneSize()
+        return 1f / minOf(carWidth.toFloat() / phone.x, carHeight.toFloat() / phone.y)
+    }
+
+    fun phoneSize(): PointF {
+        val display = appContext.getSystemService(DisplayManager::class.java)
+            .getDisplay(Display.DEFAULT_DISPLAY)
+        val size = android.graphics.Point()
+        @Suppress("DEPRECATION")
+        display.getRealSize(size)
+        return PointF(size.x.toFloat(), size.y.toFloat())
+    }
+}
