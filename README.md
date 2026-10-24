@@ -8,6 +8,18 @@ Inicio, Recientes y Notificaciones encima.
 
 > ⚠️ Usalo con el auto estacionado. Proyecto personal, no está en Play Store ni afiliado a Google.
 
+## Capturas
+
+Tomadas con el [Desktop Head Unit](#probar-sin-auto) (el simulador de pantalla de auto de Google).
+
+![Pantalla de inicio del celular espejada en el auto, con los botones de Atrás, Inicio, Recientes y Notificaciones](docs/screenshots/auto-inicio.png)
+
+![Navegador abierto en el celular, usado desde la pantalla del auto](docs/screenshots/auto-navegador.png)
+
+| AutoMirror en el menú de apps de Android Auto | Permiso de captura en el celular | Configuración en el celular |
+|---|---|---|
+| ![Menú de apps de Android Auto](docs/screenshots/auto-menu-apps.png) | ![Diálogo para compartir la pantalla completa](docs/screenshots/celular-permiso.png) | ![Pantalla de configuración de AutoMirror](docs/screenshots/celular-configuracion.png) |
+
 ## Cómo funciona
 
 ```
@@ -44,6 +56,8 @@ Inicio, Recientes y Notificaciones encima.
 - Cada vez que se inicia hay que aceptar en el celular el permiso de captura de pantalla (Android lo
   exige desde Android 14).
 - El auto tiene que tener pantalla táctil.
+- En la vista dividida de Android Auto (apps o multimedia al costado), la imagen se recorta en vez de
+  achicarse.
 
 ## Instalación
 
