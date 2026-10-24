@@ -140,3 +140,7 @@ $ANDROID_SDK/extras/google/auto/desktop-head-unit
 | `TouchService.kt` | Servicio de accesibilidad: gestos, botones globales y orientación |
 | `DisplaySize.kt` | Ajuste de resolución a la proporción del auto |
 | `MainActivity.kt` | Pantalla de configuración en el celular |
+
+## Licencia
+
+[MIT](LICENSE)
