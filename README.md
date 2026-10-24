@@ -16,9 +16,9 @@ Tomadas con el [Desktop Head Unit](#probar-sin-auto) (el simulador de pantalla d
 
 ![Navegador abierto en el celular, usado desde la pantalla del auto](docs/screenshots/auto-navegador.png)
 
-| AutoMirror en el menú de apps de Android Auto | Permiso de captura en el celular | Configuración en el celular |
-|---|---|---|
-| ![Menú de apps de Android Auto](docs/screenshots/auto-menu-apps.png) | ![Diálogo para compartir la pantalla completa](docs/screenshots/celular-permiso.png) | ![Pantalla de configuración de AutoMirror](docs/screenshots/celular-configuracion.png) |
+| Permiso de captura en el celular | Configuración en el celular |
+|---|---|
+| ![Diálogo para compartir la pantalla completa](docs/screenshots/celular-permiso.png) | ![Pantalla de configuración de AutoMirror](docs/screenshots/celular-configuracion.png) |
 
 ## Cómo funciona
 
