@@ -60,7 +60,7 @@ object DisplaySize {
         val w = if (portraitNatural) short else long
         val h = if (portraitNatural) long else short
         if (call("setForcedDisplaySize", w, h)) {
-            prefs(context).edit().putBoolean(KEY_FORCED, true).apply()
+            prefs(context).edit().putBoolean(KEY_FORCED, true).commit()
             Log.i(TAG, "Resolución forzada a ${w}x$h (auto ${carWidth}x$carHeight)")
         }
     }
@@ -69,7 +69,7 @@ object DisplaySize {
     fun reset(context: Context) {
         if (!prefs(context).getBoolean(KEY_FORCED, false) || !canChange(context)) return
         if (call("clearForcedDisplaySize")) {
-            prefs(context).edit().putBoolean(KEY_FORCED, false).apply()
+            prefs(context).edit().putBoolean(KEY_FORCED, false).commit()
             Log.i(TAG, "Resolución restaurada")
         }
     }
