@@ -23,8 +23,8 @@ import com.automirror.R
 import com.automirror.TouchService
 
 /**
- * Pantalla del auto. Se presenta como app de navegación para que Android Auto le entregue una
- * superficie libre (la del "mapa"), y sobre esa superficie se espeja el celular.
+ * Car screen. It presents itself as a navigation app so Android Auto gives it a free surface
+ * (the "map" one), and the phone is mirrored onto that surface.
  */
 class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback {
 
@@ -48,15 +48,15 @@ class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback
     override fun onGetTemplate(): Template {
         val builder = NavigationTemplate.Builder()
             .setActionStrip(if (Mirror.isMirroring) mirroringActions() else startActions())
-            // Sin el botón PAN el host no manda los toques ni los deslizamientos a la superficie.
+            // Without the PAN button the host doesn't send taps or swipes to the surface.
             .setMapActionStrip(ActionStrip.Builder().addAction(Action.PAN).build())
             .setPanModeListener { }
 
         if (!Mirror.isMirroring) {
             val message = if (TouchService.isEnabled(carContext)) {
-                "Tocá «Iniciar» y aceptá la captura de pantalla en el celular"
+                "Tap \"Start\" and accept the screen capture on the phone"
             } else {
-                "En el celular, activá el servicio de accesibilidad de automirror"
+                "On the phone, enable the automirror accessibility service"
             }
             builder.setNavigationInfo(MessageInfo.Builder(carContext.getString(R.string.app_name)).setText(message).build())
         }
@@ -64,7 +64,7 @@ class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback
     }
 
     private fun startActions() = ActionStrip.Builder()
-        .addAction(Action.Builder().setTitle("Iniciar").setOnClickListener { requestCaptureOnPhone() }.build())
+        .addAction(Action.Builder().setTitle("Start").setOnClickListener { requestCaptureOnPhone() }.build())
         .build()
 
     private fun mirroringActions() = ActionStrip.Builder()
@@ -80,17 +80,17 @@ class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback
         .build()
 
     private fun requestCaptureOnPhone() {
-        // Abrir una Activity desde segundo plano está permitido porque el servicio de
-        // accesibilidad está activo; si no lo está, el usuario tiene que abrir la app a mano.
+        // Opening an Activity from the background is allowed because the accessibility service
+        // is enabled; if it isn't, the user has to open the app manually.
         try {
             ProjectionActivity.launch(carContext)
         } catch (e: Exception) {
-            Log.w(TAG, "No se pudo abrir el pedido de captura en el celular", e)
+            Log.w(TAG, "Couldn't open the capture request on the phone", e)
         }
     }
 
     override fun onSurfaceAvailable(surfaceContainer: SurfaceContainer) {
-        Log.i(TAG, "Superficie ${surfaceContainer.width}x${surfaceContainer.height} @${surfaceContainer.dpi}")
+        Log.i(TAG, "Surface ${surfaceContainer.width}x${surfaceContainer.height} @${surfaceContainer.dpi}")
         Mirror.setCarSurface(
             surfaceContainer.surface, surfaceContainer.width, surfaceContainer.height, surfaceContainer.dpi
         )
@@ -101,22 +101,22 @@ class MirrorScreen(carContext: CarContext) : Screen(carContext), SurfaceCallback
     }
 
     override fun onVisibleAreaChanged(visibleArea: Rect) {
-        Log.d(TAG, "Área visible $visibleArea")
+        Log.d(TAG, "Visible area $visibleArea")
     }
 
     override fun onStableAreaChanged(stableArea: Rect) {
-        Log.d(TAG, "Área estable $stableArea")
+        Log.d(TAG, "Stable area $stableArea")
     }
 
     override fun onClick(x: Float, y: Float) {
         val p = Mirror.carToPhone(x, y)
-        Log.d(TAG, "onClick auto=($x, $y) celular=$p")
+        Log.d(TAG, "onClick car=($x, $y) phone=$p")
         if (p != null) TouchService.instance?.tap(p)
     }
 
     override fun onScroll(distanceX: Float, distanceY: Float) {
         Log.d(TAG, "onScroll ($distanceX, $distanceY)")
-        // Igual que GestureDetector: distance = posición anterior - posición actual.
+        // Same as GestureDetector: distance = previous position - current position.
         val s = Mirror.carToPhoneScale()
         TouchService.instance?.dragBy(-distanceX * s, -distanceY * s)
     }

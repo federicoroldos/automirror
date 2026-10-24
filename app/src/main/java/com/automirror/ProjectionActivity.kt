@@ -10,15 +10,15 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Display
 
-/** Activity transparente que solo muestra el diálogo de Android para permitir la captura. */
+/** Transparent Activity that only shows Android's dialog to allow the capture. */
 class ProjectionActivity : Activity() {
 
     companion object {
         private const val REQUEST_CAPTURE = 1
 
         fun launch(context: Context) {
-            // Siempre en la pantalla del celular: el CarContext apunta a la pantalla del auto,
-            // donde Android no deja abrir Activities comunes.
+            // Always on the phone's screen: the CarContext points to the car's screen, where
+            // Android doesn't allow opening regular Activities.
             val app = context.applicationContext
             val options = ActivityOptions.makeBasic().setLaunchDisplayId(Display.DEFAULT_DISPLAY)
             app.startActivity(
@@ -34,7 +34,7 @@ class ProjectionActivity : Activity() {
 
         val mpm = getSystemService(MediaProjectionManager::class.java)
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // Pide la pantalla completa (no "una sola app"), que es lo que tiene sentido espejar.
+            // Asks for the entire screen (not "a single app"), which is what makes sense to mirror.
             mpm.createScreenCaptureIntent(MediaProjectionConfig.createConfigForDefaultDisplay())
         } else {
             mpm.createScreenCaptureIntent()
@@ -43,7 +43,7 @@ class ProjectionActivity : Activity() {
         startActivityForResult(intent, REQUEST_CAPTURE)
     }
 
-    @Deprecated("Activity sin AndroidX")
+    @Deprecated("Activity without AndroidX")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CAPTURE && resultCode == RESULT_OK && data != null) {

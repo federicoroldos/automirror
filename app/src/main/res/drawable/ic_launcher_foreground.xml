@@ -3,7 +3,7 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Celular que manda su imagen a una pantalla ancha (la del auto). -->
+    <!-- A phone sending its image to a wide screen (the car's). -->
     <path
         android:pathData="M31,38H39A3,3 0,0 1,42 41V63A3,3 0,0 1,39 66H31A3,3 0,0 1,28 63V41A3,3 0,0 1,31 38Z"
         android:strokeWidth="3.5"

@@ -3,14 +3,14 @@
 .kotlin/
 build/
 
-# Rutas locales de cada PC (sdk.dir)
+# Per-machine local paths (sdk.dir)
 local.properties
 
 # IDE
 .idea/
 *.iml
 
-# Binarios: la app se compila e instala desde el código
+# Binaries: the app is built and installed from source
 *.apk
 *.aab
 *.apkm

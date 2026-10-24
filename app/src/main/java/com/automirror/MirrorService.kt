@@ -13,9 +13,8 @@ import android.os.IBinder
 import android.os.PowerManager
 
 /**
- * Servicio en primer plano que mantiene viva la captura de pantalla (obligatorio para usar
- * MediaProjection) y deja la pantalla del celular encendida mientras se espeja: si se apaga,
- * en el auto se vería negro.
+ * Foreground service that keeps the screen capture alive (required to use MediaProjection) and
+ * keeps the phone's screen on while mirroring: if it turned off, the car would show black.
  */
 class MirrorService : Service() {
 
@@ -51,7 +50,7 @@ class MirrorService : Service() {
             return START_NOT_STICKY
         }
 
-        // Android 14+ exige estar en primer plano con tipo mediaProjection ANTES de pedir la proyección.
+        // Android 14+ requires being in the foreground with type mediaProjection BEFORE requesting the projection.
         startForeground(NOTIFICATION_ID, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
 
         val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
@@ -83,7 +82,7 @@ class MirrorService : Service() {
     @Suppress("DEPRECATION")
     private fun acquireWakeLock() {
         if (wakeLock?.isHeld == true) return
-        // SCREEN_BRIGHT_WAKE_LOCK está deprecado pero sigue funcionando y no requiere una Activity visible.
+        // SCREEN_BRIGHT_WAKE_LOCK is deprecated but still works and doesn't need a visible Activity.
         wakeLock = getSystemService(PowerManager::class.java).newWakeLock(
             PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
             "AutoMirror:screen"
@@ -93,7 +92,7 @@ class MirrorService : Service() {
     private fun buildNotification(): Notification {
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "Espejado", NotificationManager.IMPORTANCE_LOW)
+            NotificationChannel(CHANNEL_ID, "Mirroring", NotificationManager.IMPORTANCE_LOW)
         )
         val stopIntent = PendingIntent.getService(
             this, 0,
@@ -105,10 +104,10 @@ class MirrorService : Service() {
         )
         return Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_mirror)
-            .setContentTitle("Espejando pantalla en el auto")
+            .setContentTitle("Mirroring screen to the car")
             .setContentIntent(openIntent)
             .setOngoing(true)
-            .addAction(Notification.Action.Builder(null, "Detener", stopIntent).build())
+            .addAction(Notification.Action.Builder(null, "Stop", stopIntent).build())
             .build()
     }
 }

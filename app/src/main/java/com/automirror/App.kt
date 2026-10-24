@@ -6,8 +6,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Mirror.init(this)
-        // Si el proceso arranca, no hay espejado en curso: si quedó una resolución forzada
-        // (por ejemplo, porque la app se cerró de golpe) se restaura.
+        // If the process is starting, nothing is being mirrored: if a forced resolution was left
+        // behind (for example, because the app was killed abruptly), restore it.
         DisplaySize.reset(this)
     }
 }

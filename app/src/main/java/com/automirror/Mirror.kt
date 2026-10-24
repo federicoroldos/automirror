@@ -12,14 +12,14 @@ import android.view.Display
 import android.view.Surface
 
 /**
- * Estado compartido entre el lado del celular (captura) y el lado del auto (superficie).
+ * State shared between the phone side (capture) and the car side (surface).
  *
- * El celular aporta un [MediaProjection]; el auto aporta un [Surface]. Cuando están los dos,
- * se crea un VirtualDisplay que espeja la pantalla del celular directo sobre la superficie
- * del auto. El sistema escala la imagen manteniendo la proporción y la centra, así que
- * [carToPhone] solo tiene que deshacer esa transformación.
+ * The phone provides a [MediaProjection]; the car provides a [Surface]. When both are present,
+ * a VirtualDisplay is created that mirrors the phone's screen straight onto the car's surface.
+ * The system scales the image keeping its aspect ratio and centers it, so [carToPhone] only has
+ * to undo that transformation.
  *
- * Todo se usa desde el hilo principal.
+ * Everything is used from the main thread.
  */
 object Mirror {
     private const val TAG = "AutoMirror"
@@ -53,7 +53,7 @@ object Mirror {
         projection = newProjection
         newProjection.registerCallback(object : MediaProjection.Callback() {
             override fun onStop() {
-                Log.i(TAG, "MediaProjection detenida por el sistema")
+                Log.i(TAG, "MediaProjection stopped by the system")
                 if (projection === newProjection) releaseProjection()
             }
         }, mainHandler)
@@ -87,18 +87,18 @@ object Mirror {
         val p = projection ?: return
         val surface = carSurface
         val vd = virtualDisplay
-        // Si el auto cambia de tamaño, el celular se adapta. Si la superficie desaparece
-        // (el usuario abrió otra app en el auto) se deja como está hasta que termine el espejado.
+        // If the car changes size, the phone adapts. If the surface goes away (the user opened
+        // another app on the car), it's left as is until mirroring ends.
         if (surface != null) DisplaySize.matchAspect(appContext, carWidth, carHeight)
         if (vd == null) {
-            // Desde Android 14 cada MediaProjection permite crear un único VirtualDisplay,
-            // así que se crea recién cuando hay superficie y después solo se le cambia el destino.
+            // Since Android 14 each MediaProjection can only create a single VirtualDisplay, so
+            // it's created only once there's a surface, and after that only its target changes.
             if (surface == null) return
             virtualDisplay = p.createVirtualDisplay(
                 "AutoMirror", carWidth, carHeight, carDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, mainHandler
             )
-            Log.i(TAG, "VirtualDisplay creado ${carWidth}x$carHeight @$carDpi")
+            Log.i(TAG, "VirtualDisplay created ${carWidth}x$carHeight @$carDpi")
         } else if (surface == null) {
             vd.surface = null
         } else {
@@ -107,7 +107,7 @@ object Mirror {
         }
     }
 
-    /** Convierte un punto de la superficie del auto a coordenadas de la pantalla del celular. */
+    /** Converts a point on the car's surface to coordinates on the phone's screen. */
     fun carToPhone(x: Float, y: Float): PointF? {
         if (carWidth == 0 || carHeight == 0) return null
         val phone = phoneSize()
@@ -120,7 +120,7 @@ object Mirror {
         return PointF(px, py)
     }
 
-    /** Cuántos píxeles del celular equivale un píxel de la superficie del auto. */
+    /** How many phone pixels one pixel of the car's surface is worth. */
     fun carToPhoneScale(): Float {
         if (carWidth == 0 || carHeight == 0) return 1f
         val phone = phoneSize()

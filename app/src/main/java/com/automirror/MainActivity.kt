@@ -15,7 +15,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 
-/** Pantalla del celular: deja todo configurado para que después se use solo desde el auto. */
+/** Phone screen: sets everything up so that afterwards it's used only from the car. */
 class MainActivity : Activity() {
 
     private lateinit var accessibilityStatus: TextView
@@ -31,31 +31,31 @@ class MainActivity : Activity() {
         }
 
         column.addView(text(getString(R.string.app_name), 26f))
-        column.addView(text("Espeja la pantalla del celular en Android Auto y permite usarla tocando la pantalla del auto.", 15f))
+        column.addView(text("Mirrors the phone's screen on Android Auto and lets you use it by touching the car's screen.", 15f))
 
-        column.addView(text("1. Servicio de accesibilidad", 19f, top = 28))
-        column.addView(text("Hace falta para que los toques del auto lleguen al celular.", 15f))
+        column.addView(text("1. Accessibility service", 19f, top = 28))
+        column.addView(text("Needed so touches on the car reach the phone.", 15f))
         accessibilityStatus = text("", 15f)
         column.addView(accessibilityStatus)
-        column.addView(button("Abrir ajustes de accesibilidad") {
+        column.addView(button("Open accessibility settings") {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         })
         column.addView(text(
-            "Si Android dice que es un \"ajuste restringido\": abrí la info de la app, tocá ⋮ arriba a la derecha y elegí \"Permitir ajustes restringidos\". Después volvé a intentar.",
+            "If Android says it's a \"restricted setting\": open the app info, tap ⋮ in the top right corner and choose \"Allow restricted settings\". Then try again.",
             13f
         ))
-        column.addView(button("Abrir info de la app") {
+        column.addView(button("Open app info") {
             startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
         })
 
         column.addView(text("2. Android Auto", 19f, top = 28))
         column.addView(text(
-            "En la app de Android Auto: tocá varias veces \"Versión\" para activar el modo desarrollador, después ⋮ → Configuración para desarrolladores → activá \"Fuentes desconocidas\". automirror va a aparecer en el menú de apps del auto.",
+            "In the Android Auto app: tap \"Version\" several times to enable developer mode, then ⋮ → Developer settings → enable \"Unknown sources\". automirror will show up in the car's app menu.",
             15f
         ))
 
-        column.addView(text("3. Probar", 19f, top = 28))
-        column.addView(text("Al abrir automirror en el auto se pide acá el permiso de captura. También podés iniciarlo a mano:", 15f))
+        column.addView(text("3. Try it", 19f, top = 28))
+        column.addView(text("Opening automirror on the car asks for the capture permission here. You can also start it manually:", 15f))
         mirrorButton = button("") {
             if (Mirror.isMirroring) MirrorService.stop(this) else ProjectionActivity.launch(this)
         }
@@ -85,8 +85,8 @@ class MainActivity : Activity() {
     }
 
     private fun refresh() {
-        accessibilityStatus.text = if (TouchService.isEnabled(this)) "✔ Activado" else "✘ Desactivado"
-        mirrorButton.text = if (Mirror.isMirroring) "Detener espejado" else "Iniciar espejado"
+        accessibilityStatus.text = if (TouchService.isEnabled(this)) "✔ Enabled" else "✘ Disabled"
+        mirrorButton.text = if (Mirror.isMirroring) "Stop mirroring" else "Start mirroring"
     }
 
     private fun text(value: String, sizeSp: Float, top: Int = 6) = TextView(this).apply {

@@ -12,12 +12,12 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
- * Cambia la resolución lógica del celular (lo mismo que `adb shell wm size`) para que tenga la
- * misma proporción que la pantalla del auto y la imagen la llene entera.
+ * Changes the phone's logical resolution (same as `adb shell wm size`) so it has the same
+ * aspect ratio as the car's screen and the image fills it completely.
  *
- * Necesita WRITE_SECURE_SETTINGS, que solo se puede dar una vez por adb:
+ * Needs WRITE_SECURE_SETTINGS, which can only be granted once via adb:
  *   adb shell pm grant com.automirror android.permission.WRITE_SECURE_SETTINGS
- * Sin ese permiso todo sigue funcionando, con franjas negras.
+ * Without that permission everything still works, with black bars.
  */
 object DisplaySize {
     private const val TAG = "AutoMirror"
@@ -30,7 +30,7 @@ object DisplaySize {
             Class.forName("android.view.WindowManagerGlobal")
                 .getMethod("getWindowManagerService").invoke(null)
         } catch (e: Exception) {
-            Log.w(TAG, "No se pudo acceder a IWindowManager", e)
+            Log.w(TAG, "Couldn't access IWindowManager", e)
             null
         }
     }
@@ -38,7 +38,7 @@ object DisplaySize {
     fun canChange(context: Context): Boolean =
         context.checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
 
-    /** Ajusta la resolución para que, en horizontal, tenga la proporción ancho/alto del auto. */
+    /** Adjusts the resolution so that, in landscape, it has the car's width/height ratio. */
     fun matchAspect(context: Context, carWidth: Int, carHeight: Int) {
         if (!canChange(context) || carWidth <= 0 || carHeight <= 0) return
         val display = context.getSystemService(DisplayManager::class.java).getDisplay(Display.DEFAULT_DISPLAY)
@@ -46,7 +46,7 @@ object DisplaySize {
         val physShort = min(mode.physicalWidth, mode.physicalHeight)
         val physLong = max(mode.physicalWidth, mode.physicalHeight)
 
-        // Proporción del auto en horizontal (lado largo / lado corto).
+        // The car's aspect ratio in landscape (long side / short side).
         val aspect = max(carWidth, carHeight).toFloat() / min(carWidth, carHeight)
         var short = physShort
         var long = even(physShort * aspect)
@@ -55,22 +55,22 @@ object DisplaySize {
             short = even(physLong / aspect)
         }
 
-        // La resolución se fija en la orientación natural del equipo (vertical en un celular).
+        // The resolution is set in the device's natural orientation (portrait on a phone).
         val portraitNatural = mode.physicalWidth <= mode.physicalHeight
         val w = if (portraitNatural) short else long
         val h = if (portraitNatural) long else short
         if (call("setForcedDisplaySize", w, h)) {
             prefs(context).edit().putBoolean(KEY_FORCED, true).commit()
-            Log.i(TAG, "Resolución forzada a ${w}x$h (auto ${carWidth}x$carHeight)")
+            Log.i(TAG, "Resolution forced to ${w}x$h (car ${carWidth}x$carHeight)")
         }
     }
 
-    /** Vuelve a la resolución original, solo si la cambió esta app. */
+    /** Restores the original resolution, only if this app changed it. */
     fun reset(context: Context) {
         if (!prefs(context).getBoolean(KEY_FORCED, false) || !canChange(context)) return
         if (call("clearForcedDisplaySize")) {
             prefs(context).edit().putBoolean(KEY_FORCED, false).commit()
-            Log.i(TAG, "Resolución restaurada")
+            Log.i(TAG, "Resolution restored")
         }
     }
 
@@ -86,7 +86,7 @@ object DisplaySize {
             }
             true
         } catch (e: Exception) {
-            Log.w(TAG, "Falló $method", e)
+            Log.w(TAG, "$method failed", e)
             false
         }
     }

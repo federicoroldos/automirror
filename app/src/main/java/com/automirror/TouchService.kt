@@ -17,8 +17,8 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 
 /**
- * Servicio de accesibilidad que inyecta en el celular los gestos que llegan desde el auto.
- * Es la única forma de "tocar" la pantalla sin root.
+ * Accessibility service that injects the gestures coming from the car into the phone.
+ * It's the only way to "touch" the screen without root.
  */
 class TouchService : AccessibilityService() {
 
@@ -36,7 +36,7 @@ class TouchService : AccessibilityService() {
 
         private const val TAP_MS = 10L
 
-        /** Sin eventos de scroll durante este tiempo se considera que el dedo se levantó. */
+        /** With no scroll events for this long, the finger is considered lifted. */
         private const val DRAG_END_DELAY_MS = 150L
         private const val DRAG_SEGMENT_MS = 16L
         private const val FLING_SEGMENT_MS = 30L
@@ -46,7 +46,7 @@ class TouchService : AccessibilityService() {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    // Arrastre: se va armando como un trazo continuo (el dedo queda apoyado entre segmentos).
+    // Drag: built up as one continuous stroke (the finger stays down between segments).
     private var dragPos: PointF? = null
     private var dragStroke: GestureDescription.StrokeDescription? = null
     private var dragInFlight = false
@@ -56,12 +56,12 @@ class TouchService : AccessibilityService() {
     private var flingVelocity: PointF? = null
     private val endDragRunnable = Runnable { endDrag(null) }
 
-    // Pellizco: se acumula el factor y se inyecta un solo gesto de dos dedos al final.
+    // Pinch: the factor is accumulated and a single two-finger gesture is injected at the end.
     private var pinchFocus: PointF? = null
     private var pinchScale = 1f
     private val pinchRunnable = Runnable { dispatchPinch() }
 
-    // Ventana invisible que obliga a la pantalla a girar a horizontal mientras se espeja.
+    // Invisible window that forces the screen to rotate to landscape while mirroring.
     private var orientationView: View? = null
     private val onMirrorChanged: () -> Unit = { setForceLandscape(Mirror.isMirroring) }
 
@@ -87,8 +87,8 @@ class TouchService : AccessibilityService() {
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 PixelFormat.TRANSLUCENT
             ).apply {
-                // El sistema toma la orientación de la ventana visible más arriba que pida una,
-                // así que esto gana incluso sobre apps fijadas en vertical.
+                // The system uses the orientation of the topmost visible window that requests one,
+                // so this wins even over apps locked to portrait.
                 screenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 gravity = Gravity.TOP or Gravity.START
             }
@@ -106,7 +106,7 @@ class TouchService : AccessibilityService() {
     fun tap(p: PointF) {
         cancelDrag()
         val path = Path().apply { moveTo(p.x, p.y) }
-        // El clic se dispara al levantar el dedo: cuanto más corto el toque, menos demora.
+        // The click fires when the finger is lifted: the shorter the tap, the less delay.
         dispatch(GestureDescription.StrokeDescription(path, 0, TAP_MS))
     }
 
@@ -115,7 +115,7 @@ class TouchService : AccessibilityService() {
     fun recents() = performGlobalAction(GLOBAL_ACTION_RECENTS)
     fun notifications() = performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS)
 
-    /** Mueve el dedo virtual (dx, dy) píxeles del celular. El arrastre arranca en el centro. */
+    /** Moves the virtual finger by (dx, dy) phone pixels. The drag starts at the center. */
     fun dragBy(dx: Float, dy: Float) {
         if (dragEnding) return
         pendingDx += dx
@@ -125,7 +125,7 @@ class TouchService : AccessibilityService() {
         pumpDrag()
     }
 
-    /** Termina el arrastre soltando el dedo con esta velocidad (px/s del celular). */
+    /** Ends the drag by releasing the finger at this velocity (phone px/s). */
     fun fling(vx: Float, vy: Float) {
         handler.removeCallbacks(endDragRunnable)
         endDrag(PointF(vx, vy))

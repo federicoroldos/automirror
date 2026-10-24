@@ -11,7 +11,7 @@ class MirrorSession : Session() {
     init {
         lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
-                // Se desconectó el auto: no tiene sentido seguir capturando la pantalla.
+                // The car disconnected: there's no point in keeping the screen capture going.
                 MirrorService.stop(carContext)
             }
         })

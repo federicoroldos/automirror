@@ -6,12 +6,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!-- Opcional, se da por adb: permite ajustar la resolución del celular a la del auto. -->
+    <!-- Optional, granted via adb: lets the app match the phone's resolution to the car's. -->
     <uses-permission
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
-    <!-- Android Auto: plantilla de navegación + acceso a la superficie donde se dibuja el "mapa" -->
+    <!-- Android Auto: navigation template + access to the surface where the "map" is drawn -->
     <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
     <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
 
